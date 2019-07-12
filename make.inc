@@ -15,6 +15,7 @@
 ##------------------------------------------------------------------------------
 
 bigmpi = 0
+pythonwrap = 1
 
 HOST = $(shell hostname)
 
@@ -30,19 +31,45 @@ DEFS = -DUSE_MM_MALLOC -DSTANDALONE -DINTELQS_HAS_MPI -DMKL_ILP64
 BIGMPI_LIB = /opt/bigmpi/lib/libbigmpi.a
 BIGMPI_INC = -I/opt/bigmpi/include
 
-CFLAGS = ${OPTS} ${DEFS} \
-         -Wall -std=c++11 -qopenmp #-restrict \
-# -fasm-blocks
-
-CFLAGS += ${OPTFLAGS}
-
 #ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 INC = -I./ -I../
 
+########### big MPI for large messages #########################################
 ifeq ($(bigmpi),1)
- DEFS := ${DEFS} -DBIGMPI
- INC := ${INC} ${BIGMPI_INC}
+ DEFS	:= ${DEFS} -DBIGMPI
+ INC	:= ${INC} ${BIGMPI_INC}
 endif
+################################################################################
+
+
+CFLAGS = ${OPTS} ${DEFS} \
+         -Wall -std=c++11 -qopenmp #-restrict \
+# -fasm-blocks
+CFLAGS += ${OPTFLAGS}
+
+
+########### python wrap is only for single node ################################
+ifeq ($(pythonwrap),1)
+ OPTS	:= -g -O2
+ DEFS	:= -DUSE_MM_MALLOC -DSTANDALONE -DMKL_ILP64
+ CFLAGS	:= -xhost -qopenmp -std=c++11 $(OPTS) $(DEFS) -fPIC
+ LDFLAGS = -L${MKLROOT}/lib/intel64 \
+	-lmkl_intel_lp64 -lmkl_intel_thread \
+	-lmkl_core  -lmkl_blacs_intelmpi_lp64 \
+	-lpthread \
+	-lmkl_avx
+endif
+################################################################################
+
+
+########### added by Gian for PCL mini-cluster #################################
+ifeq ($(HOST),pcl-tiergarten)
+ PATH := ${PATH}:/swtools/intel/bin
+ INC	+= -I/nfs_home/giangiac/Intel-QS -I/swtools/intel/mkl/include/
+ MKLROOT= /swtools/intel/mkl/
+endif
+################################################################################
+
 
 ########### Modified for the ccefw-desktop environment ############
 ifeq ($(HOST),ccefw-desktop)
@@ -53,15 +80,6 @@ ifeq ($(HOST),ccefw-desktop)
  PATH := ${PATH}:/opt/intel/bin
  INC = -I./ -I../ -I/opt/intel/mkl/include/
  MKLROOT = /opt/intel/mkl/
-endif
-################################################################################
-
-
-########### added by Gian for PCL mini-cluster #################################
-ifeq ($(HOST),pcl-tiergarten.sc.intel.com)
- PATH := ${PATH}:/swtools/intel/bin
- INC += -I/nfs_home/giangiac/Intel-QS -I/swtools/intel/mkl/include/
- MKLROOT = /swtools/intel/mkl/
 endif
 ################################################################################
 

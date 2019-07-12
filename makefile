@@ -21,12 +21,16 @@ all:
 	cd tests; $(MAKE)
 	cd interface; $(MAKE)
 
+pythonwrap:
+	cd lib_python; $(MAKE)
+
 clean:
 	cd util; $(MAKE) clean
 	cd util/tests; $(MAKE) clean
 	cd qureg; $(MAKE) clean
 	cd tests; $(MAKE) clean
 	cd interface; $(MAKE) clean
+	cd lib_python; $(MAKE) clean
 	rm -fr ./build/
 
 depend:
