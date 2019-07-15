@@ -11,7 +11,7 @@ CFLAGS	+= `python3 -m pybind11 --includes`
 EXTRA	+= -shared
 
 INC	+= -I../qureg
-OBJS	:= /nfs_home/giangiac/Intel-QS/qureg/qHiPSTER.a
+OBJS	:= ../qureg/qHiPSTER.a
 
 SRC	:= intelqs.cpp
 SRC_O	:= intelqs.o

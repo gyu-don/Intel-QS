@@ -23,6 +23,14 @@
 // Start of the main program (C++ language).
 int main(int argc, char **argv)
 {
+#ifndef INTELQS_HAS_MPI
+  std::cout << "\nThis introductory code is thought to be run with MPI.\n"
+            << "To do so, please define the compiler flag INTELQS_HAS_MPI "
+            << "in the 'make.inc' file (main repository folder).\n"
+            << "Thank you.\n\n";
+  return 0;
+#endif
+
   // Create the MPI environment, passing the same argument to all the ranks.
   openqu::mpi::Environment env(argc, argv);
   // qHiPSTER is structured so that only even number of ranks are used to store

@@ -74,7 +74,9 @@ int main(int argc, char **argv)
   QubitRegister<ComplexDP> psi3(num_qubits, "rand", -1);
   {
     // no specialization
+#ifdef INTELQS_HAS_MPI
     psi1.EnableStatistics();
+#endif
     for (auto &p : qpair) {
        psi1.ApplyControlled1QubitGate(p.first, p.second, G);
     }
@@ -82,13 +84,17 @@ int main(int argc, char **argv)
     for(int pos = 0; pos < num_qubits; pos++) {
        psi1.Apply1QubitGate(pos, G);
     }
+#ifdef INTELQS_HAS_MPI
     psi1.GetStatistics();
+#endif
   }
 
   {
     // with specialization
     psi2.TurnOnSpecialize();
+#ifdef INTELQS_HAS_MPI
     psi2.EnableStatistics();
+#endif
     for (auto &p : qpair) {
        psi2.ApplyControlled1QubitGate(p.first, p.second, G);
     }
@@ -96,9 +102,18 @@ int main(int argc, char **argv)
     for(int pos = 0; pos < num_qubits; pos++) {
        psi2.Apply1QubitGate(pos, G);
     }
+#ifdef INTELQS_HAS_MPI
     psi2.GetStatistics();
+#endif
   }
 
   double e = psi2.maxabsdiff(psi1);
-  if (myrank == 0) printf("e = %lf\n", e);
+  if (myrank == 0) printf("error = %lf\n", e);
+
+#ifndef INTELQS_HAS_MPI
+  std::cout << "The test was successfully executed.\n"
+            << "However the output statistics are not available when the "
+            << "compiler flag INTELQS_HAS_MPI is not defined.\n";
+#endif
+
 }

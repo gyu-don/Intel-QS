@@ -63,9 +63,19 @@ int main(int argc, char **argv)
   for(int pos = 0; pos < num_qubits; pos++)
   {
       if (myrank == 0) printf(" ---------------------------------- \n");
+#ifdef INTELQS_HAS_MPI
       psi1.EnableStatistics();
       psi1.Apply1QubitGate(pos, G);
       psi1.GetStatistics();
       psi1.ResetStatistics();
+#else
+      psi1.Apply1QubitGate(pos, G);
+#endif
   }
+
+#ifndef INTELQS_HAS_MPI
+  std::cout << "The test was successfully executed.\n"
+            << "However the output statistics are not available when the "
+            << "compiler flag INTELQS_HAS_MPI is not defined.\n";
+#endif
 }

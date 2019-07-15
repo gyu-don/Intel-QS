@@ -108,7 +108,9 @@ int main(int argc, char **argv)
   QubitRegister<ComplexDP> psi2(num_qubits, "rand", 0, 2097152);
 
   psi2.TurnOnSpecialize();
+#ifdef INTELQS_HAS_MPI
   psi2.EnableStatistics();
+#endif
 
   for(auto g: sqg)
   {
@@ -137,6 +139,11 @@ int main(int argc, char **argv)
     }
   }
 
+#ifdef INTELQS_HAS_MPI
   psi2.GetStatistics();
-  
+#else
+  std::cout << "The test was successfully executed.\n"
+            << "However the output statistics are not available when the "
+            << "compiler flag INTELQS_HAS_MPI is not defined.\n";
+#endif
 }

@@ -105,13 +105,22 @@ int main(int argc, char **argv)
 
   // ---------------- no noise
   {
+#ifdef INTELQS_HAS_MPI
       psi0.EnableStatistics();
+#endif
       for (auto &p : qpair)
           psi0.ApplyControlled1QubitGate(p.first, p.second, G);
     
       for(int pos = 0; pos < num_qubits; pos++)
           psi0.Apply1QubitGate(pos, G);
+
+#ifdef INTELQS_HAS_MPI
       psi0.GetStatistics();
+#else
+  std::cout << "The noiseless case was successfully simulated.\n"
+            << "However the output statistics are not available when the "
+            << "compiler flag INTELQS_HAS_MPI is not defined.\n";
+#endif
   }
 
  
