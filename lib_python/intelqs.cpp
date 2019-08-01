@@ -70,7 +70,6 @@ PYBIND11_MODULE(intelqs, m)
              [](QubitRegister<ComplexDP> &a, unsigned qubit,
                 py::array_t<ComplexDP, py::array::c_style | py::array::forcecast> matrix ) {
                py::buffer_info buf = matrix.request();
-               // TODO: Add checks that the shape and type of buf is in line with TM2x2.
                if (buf.ndim != 2)
                    throw std::runtime_error("Number of dimensions must be two.");
                if (buf.shape[0] != 2 || buf.shape[1] != 2)
@@ -88,7 +87,6 @@ PYBIND11_MODULE(intelqs, m)
              [](QubitRegister<ComplexDP> &a, unsigned control, unsigned qubit,
                 py::array_t<ComplexDP, py::array::c_style | py::array::forcecast> matrix ) {
                py::buffer_info buf = matrix.request();
-               // TODO: Add checks that the shape and type of buf is in line with TM2x2.
                if (buf.ndim != 2)
                    throw std::runtime_error("Number of dimensions must be two.");
                if (buf.shape[0] != 2 || buf.shape[1] != 2)
@@ -125,6 +123,7 @@ PYBIND11_MODULE(intelqs, m)
                py::module::import("sys").attr("stdout") // Python output
                );
                std::vector<size_t> qubits = {};
+               std::cout << "<<the output has been redirected to the terminal>>\n";
                a.Print(description, qubits);
              }, "Print the quantum state with an initial description.");
 

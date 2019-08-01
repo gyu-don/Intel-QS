@@ -37,6 +37,8 @@ void QubitRegister<Type>::Apply2QubitGate(unsigned const qubit_high, unsigned co
   myrank = openqu::mpi::Environment::rank();
   nprocs = openqu::mpi::Environment::size();
 #endif
+
+  // This implementation is valid only for single MPI rank.
   assert(nprocs == 1);
 
   std::size_t n = GlobalSize();

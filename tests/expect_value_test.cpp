@@ -42,7 +42,7 @@ int main(int argc, char **argv)
 //  MPI_rank(MPI_COMM_WORLD, &myrank);
 #endif
 
-  double sum = 0.;
+  double expectation;
 
   std::cout << "------------------\n"
             << "   Single qubit   \n"
@@ -54,37 +54,26 @@ int main(int argc, char **argv)
 
   psi.Print(" initial state |psi>=|-> : ");
 
-  psi.ExpectationValueX(0,sum);
-  std::cout << "<psi|X|psi> = " << sum << "\n";
+  expectation = psi.ExpectationValueX(0);
+  std::cout << "<psi|X|psi> = " << expectation << "\n";
 
   psi.Print(" current state should still be |psi>=|-> : ");
 
 // using the general method
   std::vector<unsigned> qubits(1,0);
   std::vector<unsigned> observables(1,1);
-  sum=0;
-  psi.ExpectationValue(qubits,observables,sum);
-  std::cout << " general method  __  <psi|X|psi> = " << sum << "\n";
+  expectation = psi.ExpectationValue(qubits,observables);
+  std::cout << " general method  __  <psi|X|psi> = " << expectation << "\n";
 
   psi.Print(" current state should still be |psi>=|-> : ");
 
   psi.ApplyPauliZ(0);
   psi.Print(" current state should be Z|psi>=|+> : ");
 
-  sum=0;
-  psi.ExpectationValueX(0,sum);
-  std::cout << " <psi|X|psi> = " << sum << "\n";
-  sum=0;
-  psi.ExpectationValue(qubits,observables,sum);
-  std::cout << " general method  __  <psi|X|psi> = " << sum << "\n";
-
-  std::cout << "\n ------ repeat the experiment 100 times ---- \n";
-
-  for (int i=0; i<100; i++)
-      psi.ExpectationValueX(0,sum);
-  sum=0;
-  psi.ExpectationValueX(0,sum);
-  std::cout << "after 100 expectation evaluations <psi|X|psi> = " << sum << "\n";
+  expectation = psi.ExpectationValueX(0);
+  std::cout << " <psi|X|psi> = " << expectation << "\n";
+  expectation = psi.ExpectationValue(qubits,observables);
+  std::cout << " general method  __  <psi|X|psi> = " << expectation << "\n";
 
   std::cout << std::endl;
   psi.GetStatistics(); 
@@ -105,27 +94,23 @@ int main(int argc, char **argv)
 
   qubits.assign({0,2});
   observables.assign({3,1});
-  sum=0;
-  phi.ExpectationValue(qubits,observables,sum);
-  std::cout << " <phi|Z_0 X_2|phi> = " << sum << "\n";
+  expectation = phi.ExpectationValue(qubits,observables);
+  std::cout << " <phi|Z_0 X_2|phi> = " << expectation << "\n";
 
   qubits.assign({0,2});
   observables.assign({3,2});
-  sum=0;
-  phi.ExpectationValue(qubits,observables,sum);
-  std::cout << " <phi|Z_0 Y_2|phi> = " << sum << "\n";
+  expectation = phi.ExpectationValue(qubits,observables);
+  std::cout << " <phi|Z_0 Y_2|phi> = " << expectation << "\n";
 
   qubits.assign({1,2});
   observables.assign({3,1});
-  sum=0;
-  phi.ExpectationValue(qubits,observables,sum);
-  std::cout << " <phi|Z_1 X_2|phi> = " << sum << "\n";
+  expectation = phi.ExpectationValue(qubits,observables);
+  std::cout << " <phi|Z_1 X_2|phi> = " << expectation << "\n";
 
   qubits.assign({0,3});
   observables.assign({3,1});
-  sum=0;
-  phi.ExpectationValue(qubits,observables,sum);
-  std::cout << " <phi|Z_0 X_3|phi> = " << sum << "\n";
+  expectation = phi.ExpectationValue(qubits,observables);
+  std::cout << " <phi|Z_0 X_3|phi> = " << expectation << "\n";
 
   return 0;
 }

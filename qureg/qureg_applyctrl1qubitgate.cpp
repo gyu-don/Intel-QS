@@ -25,10 +25,7 @@
 /// @brief Define the @c QubitRegister methods for the application of controlled one-qubit gates.
 
 /////////////////////////////////////////////////////////////////////////////////////////
-/// @brief Arbitrary two-qubit gate.
-/// @param qubit_high index of the first qubit
-/// @param qubit_low index of the second qubit
-/// @param m 4x4 matrix corresponding to the quantum gate
+/// @brief Utility function to implement control gates with distributed memory.
 template <class Type>
 double QubitRegister<Type>::HP_Distrpair(unsigned control_position, unsigned target_position,
                                          TM2x2<Type> const&m)
@@ -310,10 +307,10 @@ bool QubitRegister<Type>::ApplyControlled1QubitGate_helper(unsigned control_, un
 
 
 /////////////////////////////////////////////////////////////////////////////////////////
-/// @brief Arbitrary two-qubit gate.
+/// @brief Two-qubit gate of the controlled form.
 /// @param control index of the control qubit
 /// @param qubit index of the target qubit
-/// @param m 2x2 matrix corresponding to the single-qubit gate (implemented if control qubit is in |1\>)
+/// @param m 2x2 matrix corresponding to the non-trivial one-qubit gate implemented if control qubit is in |1\>
 template <class Type>
 void QubitRegister<Type>::ApplyControlled1QubitGate(unsigned control, unsigned qubit,
                                                     TM2x2<Type> const&m)

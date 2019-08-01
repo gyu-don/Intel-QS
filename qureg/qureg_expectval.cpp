@@ -26,27 +26,29 @@
 
 /// @brief Compute expectation value of Pauli X for qubit over the full-register state
 /// @param qubit index of the involved qubit
-/// @param sum contains the initial value to which the expectation value will be added
-/// @param coeff scalar coefficient that multiplies the expectation value
+/// @param coeff scalar coefficient that multiplies the expectation value (optional)
 ///
-/// At the end of the function, the variable 'sum' is updated via:\n
-///     sum --> sum + coeff * <psi| X_qubit |psi>
+/// Return the expectation value:\n
+///     coeff * <psi| X_qubit |psi>
 //------------------------------------------------------------------------------
 template <class Type>
-void QubitRegister<Type>::ExpectationValueX(unsigned qubit, BaseType &sum, BaseType coeff)
+QubitRegister<Type>::BaseType
+QubitRegister<Type>::ExpectationValueX(unsigned qubit, BaseType coeff)
 {
 // compute the expectation value <psi|X|psi> = <psi|H.Z.H|psi>
   ApplyHadamard(qubit);
-  sum += coeff*(1. - 2.*GetProbability(qubit));
+  BaseType expectation = 1. - 2.*GetProbability(qubit);
 // recover the initial state |psi>
   ApplyHadamard(qubit);
+  return coeff * expectation;
 }
 
 
 #if 0
 //------------------------------------------------------------------------------
 template <class Type>
-void QubitRegister<Type>::ExpectationValueX(unsigned qubit, BaseType &sum)
+QubitRegister<Type>::BaseType
+QubitRegister<Type>::ExpectationValueX(unsigned qubit, BaseType coeff)
 {
 #ifdef __ONLY_NORMALIZED_STATES__
   BaseType initial_norm = 1.;
@@ -63,27 +65,29 @@ void QubitRegister<Type>::ExpectationValueX(unsigned qubit, BaseType &sum)
 
 // update sum adding <psi|X|psi>
   BaseType final_norm = ComputeNorm();
-  sum += (final_norm*final_norm - 5.*initial_norm*initial_norm)/4.;
+  BaseType expectation = (final_norm*final_norm - 5.*initial_norm*initial_norm)/4.;
 
 // undo the computation to recover the initial state |psi>
   openqu::TinyMatrix<Type, 2, 2, 32> inverse;
   inverse(0, 1) = inverse(1, 0) = Type(-1./3., 0.);
   inverse(0, 0) = inverse(1, 1) = Type( 2./3., 0.);
   Apply1QubitGate(qubit, inverse);
+
+  return coeff * expectation;
 }
 #endif
 
 
 /// @brief Compute expectation value of Pauli Y for qubit over the full-register state
 /// @param qubit index of the involved qubit
-/// @param sum contains the initial value to which the expectation value will be added
-/// @param coeff scalar coefficient that multiplies the expectation value
+/// @param coeff scalar coefficient that multiplies the expectation value (optional)
 ///
-/// At the end of the function, the variable 'sum' is updated via:\n
-///     sum --> sum + coeff * <psi| Y_qubit |psi>
+/// Return the expectation value:\n
+///     coeff * <psi| Y_qubit |psi>
 //------------------------------------------------------------------------------
 template <class Type>
-void QubitRegister<Type>::ExpectationValueY(unsigned qubit, BaseType &sum, BaseType coeff)
+QubitRegister<Type>::BaseType
+QubitRegister<Type>::ExpectationValueY(unsigned qubit, BaseType coeff)
 {
 // G is matrix from change of basis Y --> Z , such that G^dagger.Z.G=Y
   openqu::TinyMatrix<Type, 2, 2, 32> G;
@@ -93,42 +97,44 @@ void QubitRegister<Type>::ExpectationValueY(unsigned qubit, BaseType &sum, BaseT
   G(1, 1) = Type(0., f);
 // compute the iexpectation value <psi|Y|psi> = <psi|G^dagger.Z.G|psi>
   Apply1QubitGate(qubit,G);
-  sum += coeff*(1. - 2.*GetProbability(qubit));
+  BaseType expectation = 1. - 2.*GetProbability(qubit);
 // recover the initial state |psi> by applying G^dagger
   G(0, 0) = G(0, 1) = Type(f, 0.);
   G(1, 0) = Type(0., f);
   G(1, 1) = Type(0.,-f);
   Apply1QubitGate(qubit,G);
+
+  return coeff * expectation;
 }
 
 
 /// @brief Compute expectation value of Pauli Z for qubit over the full-register state
 /// @param qubit index of the involved qubit
-/// @param sum contains the initial value to which the expectation value will be added
-/// @param coeff scalar coefficient that multiplies the expectation value
+/// @param coeff scalar coefficient that multiplies the expectation value (optional)
 ///
-/// At the end of the function, the variable 'sum' is updated via:\n
-///     sum --> sum + coeff * <psi| Z_qubit |psi>
+/// Return the expectation value:\n
+///     coeff * <psi| Z_qubit |psi>
 //------------------------------------------------------------------------------
 template <class Type>
-void QubitRegister<Type>::ExpectationValueZ(unsigned qubit, BaseType &sum, BaseType coeff)
+QubitRegister<Type>::BaseType
+QubitRegister<Type>::ExpectationValueZ(unsigned qubit, BaseType coeff)
 {
-  sum += coeff*(1. - 2.*GetProbability(qubit));
+  BaseType expectation = 1. - 2.*GetProbability(qubit);
+  return coeff * expectation;
 }
 
 
 /// @brief Compute expectation value of Pauli X.X for two qubits over the full-register state
 /// @param qubit index of the first qubit
 /// @param qubit2 index of the second qubit
-/// @param sum contains the initial value to which the expectation value will be added
-/// @param coeff scalar coefficient that multiplies the expectation value
+/// @param coeff scalar coefficient that multiplies the expectation value (optional)
 ///
-/// At the end of the function, the variable 'sum' is updated via:\n
-///     sum --> sum + coeff * <psi| X_qubit.X_qubit2 |psi>
+/// Return the expectation value:\n
+///     coeff * <psi| X_qubit.X_qubit2 |psi>
 //------------------------------------------------------------------------------
 template <class Type>
-void QubitRegister<Type>::ExpectationValueXX(unsigned qubit, unsigned qubit2,
-                                             BaseType &sum, BaseType coeff)
+QubitRegister<Type>::BaseType
+QubitRegister<Type>::ExpectationValueXX(unsigned qubit, unsigned qubit2, BaseType coeff)
 {
 #ifdef __ONLY_NORMALIZED_STATES__
   BaseType initial_norm = 1.;
@@ -147,7 +153,7 @@ void QubitRegister<Type>::ExpectationValueXX(unsigned qubit, unsigned qubit2,
 
 // update sum adding <psi|XX|psi>
   BaseType final_norm = ComputeNorm();
-  sum += coeff*(final_norm*final_norm - 5.*initial_norm*initial_norm)/4.;
+  BaseType expectation = (final_norm*final_norm - 5.*initial_norm*initial_norm)/4.;
 
 // undo the computation to recover the initial state |psi>
   openqu::TinyMatrix<Type, 4, 4, 32> inverse;
@@ -156,23 +162,24 @@ void QubitRegister<Type>::ExpectationValueXX(unsigned qubit, unsigned qubit2,
   inverse(0, 3) = inverse(1, 2) = inverse(2, 1) = inverse(3, 0) = Type(-1./3., 0.);
   inverse(0, 0) = inverse(1, 1) = inverse(2, 2) = inverse(3, 3) = Type( 2./3., 0.);
   Apply2QubitGate(qubit, qubit2, inverse);
+
+  return coeff * expectation;
 }
 
 
 /// @brief Compute expectation value of Pauli Y.X for two qubits over the full-register state
 /// @param qubit index of the first qubit
 /// @param qubit2 index of the second qubit
-/// @param sum contains the initial value to which the expectation value will be added
-/// @param coeff scalar coefficient that multiplies the expectation value
+/// @param coeff scalar coefficient that multiplies the expectation value (optional)
 ///
-/// At the end of the function, the variable 'sum' is updated via:\n
-///     sum --\> sum + coeff * \<psi| Y_qubit.X_qubit2 |psi\>
+/// Return the expectation value:\n
+///     coeff * <psi| Y_qubit.X_qubit2 |psi>
 //------------------------------------------------------------------------------
 // TODO : check how the basis is it is: 00-01-10-11 or 00-10-01-11 !!!!
 //        this code uses the standard 00-01-10-11 despite this being opposite to backend storage convention
 template <class Type>
-void QubitRegister<Type>::ExpectationValueYX(unsigned qubit, unsigned qubit2,
-                                             BaseType &sum, BaseType coeff)
+QubitRegister<Type>::BaseType
+QubitRegister<Type>::ExpectationValueYX(unsigned qubit, unsigned qubit2, BaseType coeff)
 {
 #ifdef __ONLY_NORMALIZED_STATES__
   BaseType initial_norm = 1.;
@@ -192,7 +199,7 @@ void QubitRegister<Type>::ExpectationValueYX(unsigned qubit, unsigned qubit2,
 
 // update sum adding <psi|XY|psi>
   BaseType final_norm = ComputeNorm();
-  sum += coeff*(final_norm*final_norm - 5.*initial_norm*initial_norm)/4.;
+  BaseType expectation = (final_norm*final_norm - 5.*initial_norm*initial_norm)/4.;
 
 // undo the computation to recover the initial state |psi>
   openqu::TinyMatrix<Type, 4, 4, 32> inverse;
@@ -202,23 +209,24 @@ void QubitRegister<Type>::ExpectationValueYX(unsigned qubit, unsigned qubit2,
   inverse(2, 1) = inverse(3, 0) = Type(0.,-1./3.);
   inverse(0, 0) = inverse(1, 1) = inverse(2, 2) = inverse(3, 3) = Type( 2./3., 0.);
   Apply2QubitGate(qubit, qubit2, inverse);
+
+  return coeff * expectation;
 }
 
 
 /// @brief Compute expectation value of Pauli Z.X for two qubits over the full-register state
 /// @param qubit index of the first qubit
 /// @param qubit2 index of the second qubit
-/// @param sum contains the initial value to which the expectation value will be added
-/// @param coeff scalar coefficient that multiplies the expectation value
+/// @param coeff scalar coefficient that multiplies the expectation value (optional)
 ///
-/// At the end of the function, the variable 'sum' is updated via:\n
-///     sum --\> sum + coeff * \<psi| Z_qubit.X_qubit2 |psi\>
+/// Return the expectation value:\n
+///     coeff * <psi| Z_qubit.X_qubit2 |psi>
 //------------------------------------------------------------------------------
 // TODO : check how the basis is it is: 00-01-10-11 or 00-10-01-11 !!!!
 //        this code uses the standard 00-01-10-11 despite this being opposite to backend storage convention
 template <class Type>
-void QubitRegister<Type>::ExpectationValueZX(unsigned qubit, unsigned qubit2,
-                                             BaseType &sum, BaseType coeff)
+QubitRegister<Type>::BaseType
+QubitRegister<Type>::ExpectationValueZX(unsigned qubit, unsigned qubit2, BaseType coeff)
 {
 #ifdef __ONLY_NORMALIZED_STATES__
   BaseType initial_norm = 1.;
@@ -238,7 +246,7 @@ void QubitRegister<Type>::ExpectationValueZX(unsigned qubit, unsigned qubit2,
 
 // update sum adding <psi|XZ|psi>
   BaseType final_norm = ComputeNorm();
-  sum += coeff*(final_norm*final_norm - 5.*initial_norm*initial_norm)/4.;
+  BaseType expectation = (final_norm*final_norm - 5.*initial_norm*initial_norm)/4.;
 
 // undo the computation to recover the initial state |psi>
   openqu::TinyMatrix<Type, 4, 4, 32> inverse;
@@ -248,40 +256,38 @@ void QubitRegister<Type>::ExpectationValueZX(unsigned qubit, unsigned qubit2,
   inverse(2, 3) = inverse(3, 2) = Type( 1./3., 0.);
   inverse(0, 0) = inverse(1, 1) = inverse(2, 2) = inverse(3, 3) = Type( 2./3., 0.);
   Apply2QubitGate(qubit, qubit2, inverse);
+
+  return coeff * expectation;
 }
 
 
-/// @brief Compute expectation value of Pauli Y.X for two qubits over the full-register state
+/// @brief Compute expectation value of Pauli X.Y for two qubits over the full-register state
 /// @param qubit index of the first qubit
 /// @param qubit2 index of the second qubit
-/// @param sum contains the initial value to which the expectation value will be added
-/// @param coeff scalar coefficient that multiplies the expectation value
+/// @param coeff scalar coefficient that multiplies the expectation value (optional)
 ///
-/// At the end of the function, the variable 'sum' is updated via:\n
-///     sum --\> sum + coeff * \<psi| Y_qubit.X_qubit2 |psi\>
+/// Return the expectation value:\n
+///     coeff * <psi| X_qubit.Y_qubit2 |psi>
 //------------------------------------------------------------------------------
-// TODO : check how the basis is it is: 00-01-10-11 or 00-10-01-11 !!!!
-//        this code uses the standard 00-01-10-11 despite this being opposite to backend storage convention
 template <class Type>
-void QubitRegister<Type>::ExpectationValueXY(unsigned qubit, unsigned qubit2,
-                                             BaseType &sum, BaseType coeff)
+QubitRegister<Type>::BaseType
+QubitRegister<Type>::ExpectationValueXY(unsigned qubit, unsigned qubit2, BaseType coeff)
 {
-  ExpectationValueYX(qubit2, qubit, sum, coeff);
+  return ExpectationValueYX(qubit2, qubit, coeff);
 }
 
 
 /// @brief Compute expectation value of Pauli Y.Y for two qubits over the full-register state
 /// @param qubit index of the first qubit
 /// @param qubit2 index of the second qubit
-/// @param sum contains the initial value to which the expectation value will be added
-/// @param coeff scalar coefficient that multiplies the expectation value
+/// @param coeff scalar coefficient that multiplies the expectation value (optional)
 ///
-/// At the end of the function, the variable 'sum' is updated via:\n
-///     sum --\> sum + coeff * \<psi| Y_qubit.Y_qubit2 |psi\>
+/// Return the expectation value:\n
+///     coeff * <psi| Y_qubit.Y_qubit2 |psi>
 //------------------------------------------------------------------------------
 template <class Type>
-void QubitRegister<Type>::ExpectationValueYY(unsigned qubit, unsigned qubit2,
-                                             BaseType &sum, BaseType coeff)
+QubitRegister<Type>::BaseType
+QubitRegister<Type>::ExpectationValueYY(unsigned qubit, unsigned qubit2, BaseType coeff)
 {
 #ifdef __ONLY_NORMALIZED_STATES__
   BaseType initial_norm = 1.;
@@ -301,7 +307,7 @@ void QubitRegister<Type>::ExpectationValueYY(unsigned qubit, unsigned qubit2,
 
 // update sum adding <psi|YY|psi>
   BaseType final_norm = ComputeNorm();
-  sum += coeff*(final_norm*final_norm - 5.*initial_norm*initial_norm)/4.;
+  BaseType expectation = (final_norm*final_norm - 5.*initial_norm*initial_norm)/4.;
 
 // undo the computation to recover the initial state |psi>
   openqu::TinyMatrix<Type, 4, 4, 32> inverse;
@@ -311,23 +317,24 @@ void QubitRegister<Type>::ExpectationValueYY(unsigned qubit, unsigned qubit2,
   inverse(1, 2) = inverse(2, 1) = Type(-1./3., 0.);
   inverse(0, 0) = inverse(1, 1) = inverse(2, 2) = inverse(3, 3) = Type( 2./3., 0.);
   Apply2QubitGate(qubit, qubit2, inverse);
+
+  return coeff * expectation;
 }
 
 
 /// @brief Compute expectation value of Pauli Z.Y for two qubits over the full-register state
 /// @param qubit index of the first qubit
 /// @param qubit2 index of the second qubit
-/// @param sum contains the initial value to which the expectation value will be added
-/// @param coeff scalar coefficient that multiplies the expectation value
+/// @param coeff scalar coefficient that multiplies the expectation value (optional)
 ///
-/// At the end of the function, the variable 'sum' is updated via:\n
-///     sum --\> sum + coeff * \<psi| Z_qubit.Y_qubit2 |psi\>
+/// Return the expectation value:\n
+///     coeff * <psi| Z_qubit.Y_qubit2 |psi>
 //------------------------------------------------------------------------------
 // TODO : check how the basis is it is: 00-01-10-11 or 00-10-01-11 !!!!
 //        this code uses the standard 00-01-10-11 despite this being opposite to backend storage convention
 template <class Type>
-void QubitRegister<Type>::ExpectationValueZY(unsigned qubit, unsigned qubit2,
-                                             BaseType &sum, BaseType coeff)
+QubitRegister<Type>::BaseType
+QubitRegister<Type>::ExpectationValueZY(unsigned qubit, unsigned qubit2, BaseType coeff)
 {
 #ifdef __ONLY_NORMALIZED_STATES__
   BaseType initial_norm = 1.;
@@ -347,7 +354,7 @@ void QubitRegister<Type>::ExpectationValueZY(unsigned qubit, unsigned qubit2,
 
 // update sum adding <psi|YZ|psi>
   BaseType final_norm = ComputeNorm();
-  sum += coeff*(final_norm*final_norm - 5.*initial_norm*initial_norm)/4.;
+  BaseType expectation = (final_norm*final_norm - 5.*initial_norm*initial_norm)/4.;
 
 // undo the computation to recover the initial state |psi>
   openqu::TinyMatrix<Type, 4, 4, 32> inverse;
@@ -357,44 +364,40 @@ void QubitRegister<Type>::ExpectationValueZY(unsigned qubit, unsigned qubit2,
   inverse(1, 0) = inverse(2, 3) = Type(0.,-1./3.);
   inverse(0, 0) = inverse(1, 1) = inverse(2, 2) = inverse(3, 3) = Type( 2./3., 0.);
   Apply2QubitGate(qubit, qubit2, inverse);
+
+  return coeff * expectation;
 }
 
 
 /// @brief Compute expectation value of Pauli X.Z for two qubits over the full-register state
 /// @param qubit index of the first qubit
 /// @param qubit2 index of the second qubit
-/// @param sum contains the initial value to which the expectation value will be added
-/// @param coeff scalar coefficient that multiplies the expectation value
+/// @param coeff scalar coefficient that multiplies the expectation value (optional)
 ///
-/// At the end of the function, the variable 'sum' is updated via:\n
-///     sum --\> sum + coeff * \<psi| X_qubit.Z_qubit2 |psi\>
+/// Return the expectation value:\n
+///     coeff * <psi| X_qubit.Z_qubit2 |psi>
 //------------------------------------------------------------------------------
-// TODO : check how the basis is it is: 00-01-10-11 or 00-10-01-11 !!!!
-//        this code uses the standard 00-01-10-11 despite this being opposite to backend storage convention
 template <class Type>
-void QubitRegister<Type>::ExpectationValueXZ(unsigned qubit, unsigned qubit2,
-                                             BaseType &sum, BaseType coeff)
+QubitRegister<Type>::BaseType
+QubitRegister<Type>::ExpectationValueXZ(unsigned qubit, unsigned qubit2, BaseType coeff)
 {
-  ExpectationValueZX(qubit2, qubit, sum, coeff);
+  return ExpectationValueZX(qubit2, qubit, coeff);
 }
 
 
 /// @brief Compute expectation value of Pauli Y.Z for two qubits over the full-register state
 /// @param qubit index of the first qubit
 /// @param qubit2 index of the second qubit
-/// @param sum contains the initial value to which the expectation value will be added
-/// @param coeff scalar coefficient that multiplies the expectation value
+/// @param coeff scalar coefficient that multiplies the expectation value (optional)
 ///
-/// At the end of the function, the variable 'sum' is updated via:\n
-///     sum --\> sum + coeff * \<psi| Y_qubit.Z_qubit2 |psi\>
+/// Return the expectation value:\n
+///     coeff * <psi| Y_qubit.Z_qubit2 |psi>
 //------------------------------------------------------------------------------
-// TODO : check how the basis is it is: 00-01-10-11 or 00-10-01-11 !!!!
-//        this code uses the standard 00-01-10-11 despite this being opposite to backend storage convention
 template <class Type>
-void QubitRegister<Type>::ExpectationValueYZ(unsigned qubit, unsigned qubit2,
-                                            BaseType &sum, BaseType coeff)
+QubitRegister<Type>::BaseType
+QubitRegister<Type>::ExpectationValueYZ(unsigned qubit, unsigned qubit2, BaseType coeff)
 {
-  ExpectationValueZY(qubit2, qubit, sum, coeff);
+  return ExpectationValueZY(qubit2, qubit, coeff);
 }
 
 
@@ -404,12 +407,12 @@ void QubitRegister<Type>::ExpectationValueYZ(unsigned qubit, unsigned qubit2,
 /// @param sum contains the initial value to which the expectation value will be added
 /// @param coeff scalar coefficient that multiplies the expectation value
 ///
-/// At the end of the function, the variable 'sum' is updated via:\n
-///     sum --\> sum + coeff * \<psi| Z_qubit.Z_qubit2 |psi\>
+/// Return the expectation value:\n
+///     coeff * <psi| Z_qubit.Z_qubit2 |psi>
 //------------------------------------------------------------------------------
 template <class Type>
-void QubitRegister<Type>::ExpectationValueZZ(unsigned qubit, unsigned qubit2,
-                                             BaseType &sum, BaseType coeff)
+QubitRegister<Type>::BaseType
+QubitRegister<Type>::ExpectationValueZZ(unsigned qubit, unsigned qubit2, BaseType coeff)
 {
 #ifdef __ONLY_NORMALIZED_STATES__
   BaseType initial_norm = 1.;
@@ -430,7 +433,7 @@ void QubitRegister<Type>::ExpectationValueZZ(unsigned qubit, unsigned qubit2,
 
 // update sum adding <psi|ZZ|psi>
   BaseType final_norm = ComputeNorm();
-  sum += coeff*(final_norm*final_norm - 5.*initial_norm*initial_norm)/4.;
+  BaseType expectation = (final_norm*final_norm - 5.*initial_norm*initial_norm)/4.;
 
 // undo the computation to recover the initial state |psi>
   openqu::TinyMatrix<Type, 4, 4, 32> inverse;
@@ -441,6 +444,8 @@ void QubitRegister<Type>::ExpectationValueZZ(unsigned qubit, unsigned qubit2,
   inverse(0, 0) = inverse(3, 3) = Type( 1./3., 0.);
   inverse(1, 1) = inverse(2, 2) = Type(  1.  , 0.);
   Apply2QubitGate(qubit, qubit2, inverse);
+
+  return coeff * expectation;
 }
 
 
@@ -459,11 +464,10 @@ std::size_t HammingWeight(std::size_t x)
 /// @brief Compute expectation value of a Pauli string for multiple qubits over the full-register state.
 /// @param qubits vector of the involved qubit indices
 /// @param observables vector of the involved pauli operators {1,2,3} -> {X,Y,Z}
-/// @param sum contains the initial value to which the expectation value will be added
-/// @param coeff scalar coefficient that multiplies the expectation value
+/// @param coeff scalar coefficient that multiplies the expectation value (optional)
 ///
-/// At the end of the function, the variable 'sum' is updated via:\n
-///     sum --> sum + coeff * <psi| Pauli_String |psi>\n
+/// Return the expectation value:\n
+///     coeff * <psi| Pauli_String |psi>\n
 /// where the Pauli_String is defined by:\n
 ///     observables[0]_qubit[0] . observables[1]_qubit[1] ...\n
 /// and each Pauli operator is encoded according to:\n
@@ -471,11 +475,70 @@ std::size_t HammingWeight(std::size_t x)
 //------------------------------------------------------------------------------
 // observable:  1==PauliX , 2==PauliY , 3==PauliZ
 template <class Type>
-void QubitRegister<Type>::ExpectationValue(std::vector<unsigned> &qubits,
-                                           std::vector<unsigned> &observables,
-                                           BaseType &sum, BaseType coeff)
+QubitRegister<Type>::BaseType
+QubitRegister<Type>::ExpectationValue(std::vector<unsigned> &qubits,
+                                      std::vector<unsigned> &observables,
+                                      BaseType coeff)
 {
+// Checks on the input values.
   assert( qubits.size() == observables.size() );
+  for (unsigned j=0; j<qubits.size(); ++j)
+  {
+      assert(qubits[j]<num_qubits);
+      assert(observables[j]>0 && observables[j]<4);
+  }
+
+// Special cases defined above for single or double Pauli matrices.
+// Recall that the special case with double Pauli matrix uses Apply2QubitGate()
+// that is currently available only for the single-MPI-rank case.
+  unsigned nprocs = 1;
+#ifdef INTELQS_HAS_MPI
+  nprocs = openqu::mpi::Environment::size();
+#endif
+
+  if (qubits.size()==0)
+  {
+      return 1.;
+  }
+  else if (qubits.size()==1)
+  {
+      if (observables[0]==1)
+          return ExpectationValueX(qubits[0],coeff);
+      else if (observables[0]==2)
+          return ExpectationValueY(qubits[0],coeff);
+      else if (observables[0]==3)
+          return ExpectationValueZ(qubits[0],coeff);
+  }
+  else if (qubits.size()==2 && nprocs==1);
+  {
+      if (observables[0]==1)
+      {
+          if (observables[1]==1)
+              return ExpectationValueXX(qubits[0],qubits[1],coeff);
+          else if (observables[1]==2)
+              return ExpectationValueXY(qubits[0],qubits[1],coeff);
+          else if (observables[1]==3)
+              return ExpectationValueXZ(qubits[0],qubits[1],coeff);
+      }
+      else if (observables[0]==2)
+      {
+          if (observables[1]==1)
+              return ExpectationValueYX(qubits[0],qubits[1],coeff);
+          else if (observables[1]==2)
+              return ExpectationValueYY(qubits[0],qubits[1],coeff);
+          else if (observables[1]==3)
+              return ExpectationValueYZ(qubits[0],qubits[1],coeff);
+      }
+      else if (observables[0]==3)
+      {
+          if (observables[1]==1)
+              return ExpectationValueZX(qubits[0],qubits[1],coeff);
+          else if (observables[1]==2)
+              return ExpectationValueZY(qubits[0],qubits[1],coeff);
+          else if (observables[1]==3)
+              return ExpectationValueZZ(qubits[0],qubits[1],coeff);
+      }
+  }
 
 // G is matrix from change of basis Y --> Z, such that Ginv.Z.G = Y 
   openqu::TinyMatrix<Type, 2, 2, 32> G;
@@ -535,8 +598,8 @@ void QubitRegister<Type>::ExpectationValue(std::vector<unsigned> &qubits,
   global_value = local_value;
 #endif
 
-// update sum
-  sum += coeff * global_value;
+// update expectation
+  BaseType expectation = global_value;
 
 // undo the quantum gates to recover the initial state |psi>
   for (std::size_t i=0; i<qubits.size(); i++)
@@ -550,6 +613,8 @@ void QubitRegister<Type>::ExpectationValue(std::vector<unsigned> &qubits,
     else
       assert(0);	// should never be called
   }  
+
+  return coeff * expectation;
 }
 
 template class QubitRegister<ComplexSP>;
