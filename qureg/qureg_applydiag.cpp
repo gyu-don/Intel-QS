@@ -88,7 +88,7 @@ void QubitRegister<Type>::ApplyDiag(unsigned qubit1_, unsigned qubit2_,  TM4x4<T
        d22 = m[2][2],
        d33 = m[3][3];
   std::size_t src_glb_start = UL(myrank) * LocalSize();
-  bool controlled = (d00 == 1. && d11 == 1.);
+  bool controlled = (d00 == Type(1.) && d11 == Type(1.));
 
   
   #if 0

@@ -21,7 +21,7 @@ HOST = $(shell hostname)
 CC = g++
 CC = CC -mkl -no-ipo
 CC = mpicxx
-CC = mpiicpc
+#CC = mpiicpc
 
 OPTS = -g -O3
 VECS = -qopt-report-phase=vec -qopt-report=2
@@ -31,7 +31,7 @@ BIGMPI_LIB = /opt/bigmpi/lib/libbigmpi.a
 BIGMPI_INC = -I/opt/bigmpi/include
 
 CFLAGS = ${OPTS} ${DEFS} \
-         -Wall -std=c++11 -qopenmp #-restrict \
+         -Wall -std=c++17 -fopenmp #-restrict \
 # -fasm-blocks
 
 CFLAGS += ${OPTFLAGS}
@@ -55,6 +55,8 @@ ifeq ($(HOST),ccefw-desktop)
  MKLROOT = /opt/intel/mkl/
 endif
 ################################################################################
+MKLROOT = /opt/intel/mkl/
+INC += -I${MKLROOT}/include
 
 
 ########### added by Gian for PCL mini-cluster #################################

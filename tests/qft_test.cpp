@@ -55,7 +55,7 @@ void qft(QubitRegister<Type> &psi)
 
 
 /////////////////////////////////////////////////////////////////////////////////////////
-template<typename Type>
+template<typename Type, typename Alloc = openqu::AlignedAllocator<Type, 256>>
 static void cfft(QubitRegister<Type> &x)
 {
   
@@ -94,7 +94,7 @@ static void cfft(QubitRegister<Type> &x)
 #endif
 #else
   assert(nprocs == 1);
-  std::vector<Type, Alloc> y = x;
+  std::vector<Type, Alloc> y = x.state_storage;
   TODO(Replace with distributed FFTW)
   int N = y.size();
   for (int k = 0; k < N; k++)
@@ -108,7 +108,7 @@ static void cfft(QubitRegister<Type> &x)
     }
     y[k] /= std::sqrt(D(N));
   }
-  x = y;
+  x.state_storage = y;
 #endif
 }
 

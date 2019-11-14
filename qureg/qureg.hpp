@@ -39,9 +39,9 @@
 #include <tuple>
 #include <vector>
 
-#if defined(__ICC) || defined(__INTEL_COMPILER)
+//#if defined(__ICC) || defined(__INTEL_COMPILER)
 #include <mkl.h>
-#endif
+//#endif
 
 /// \addtogroup qureg
 /// @{

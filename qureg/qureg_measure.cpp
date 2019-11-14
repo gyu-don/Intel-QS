@@ -144,7 +144,7 @@ void QubitRegister<Type>::CollapseQubit(unsigned qubit, bool value)
 /// Return the probability corresponding to the qubit being in state |1>.
 /// The state is left unchanged and not collapsed.
 template <class Type>
-QubitRegister<Type>::BaseType QubitRegister<Type>::GetProbability(unsigned qubit)
+typename QubitRegister<Type>::BaseType QubitRegister<Type>::GetProbability(unsigned qubit)
 {
   unsigned myrank=0, nprocs=1, log2_nprocs=0;
 #ifdef INTELQS_HAS_MPI

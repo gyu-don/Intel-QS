@@ -44,7 +44,7 @@ bool QubitRegister<Type>::operator==(const QubitRegister &rhs)
 /////////////////////////////////////////////////////////////////////////////////////////
 /// @brief ???
 template <class Type>
-QubitRegister<Type>::BaseType QubitRegister<Type>::maxabsdiff(QubitRegister &x, Type sfactor)
+typename QubitRegister<Type>::BaseType QubitRegister<Type>::maxabsdiff(QubitRegister &x, Type sfactor)
 {
   assert(LocalSize() == x.LocalSize());
   BaseType lcl_maxabsdiff = -1.0;
@@ -75,7 +75,7 @@ QubitRegister<Type>::BaseType QubitRegister<Type>::maxabsdiff(QubitRegister &x, 
 /////////////////////////////////////////////////////////////////////////////////////////
 /// @brief ???
 template <class Type>
-QubitRegister<Type>::BaseType QubitRegister<Type>::maxl2normdiff(QubitRegister &x)
+typename QubitRegister<Type>::BaseType QubitRegister<Type>::maxl2normdiff(QubitRegister &x)
 {
   assert(LocalSize() == x.LocalSize());
   BaseType lcl_diff = 0.0;
@@ -123,7 +123,7 @@ void QubitRegister<Type>::Normalize()
 /////////////////////////////////////////////////////////////////////////////////////////
 /// @brief Compute the norm of the state (L2 norm).
 template <class Type>
-QubitRegister<Type>::BaseType QubitRegister<Type>::ComputeNorm()
+typename QubitRegister<Type>::BaseType QubitRegister<Type>::ComputeNorm()
 {
   BaseType local_normsq = 0;
   std::size_t lcl = LocalSize();

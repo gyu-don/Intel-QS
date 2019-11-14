@@ -35,7 +35,7 @@ int main(int argc, char** argv)
     try {
 
         // Set the error handler for C++ framework calls through the MPI_COMM_WORLD communicator.
-        QH_MPI_STATUS_CHECK(MPI_Errhandler_set(MPI_COMM_WORLD,MPI_ERRORS_RETURN));
+        QH_MPI_STATUS_CHECK(MPI_Comm_set_errhandler(MPI_COMM_WORLD,MPI_ERRORS_RETURN));
 
         // do something dumb.
         QH_MPI_STATUS_CHECK((MPI_Bsend(&argc, 1, MPI_INT, 600, 0, MPI_COMM_WORLD)));
