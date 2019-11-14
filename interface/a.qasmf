@@ -1,0 +1,10 @@
+.malloc 2
+qubit q0
+qubit q1
+PrepZ q1
+PrepZ q0
+H q0
+CNOT q0,q1
+MeasZ q0
+MeasZ q1
+.free
